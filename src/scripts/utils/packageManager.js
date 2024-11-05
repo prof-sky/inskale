@@ -1,4 +1,29 @@
+
 class PackageManager {
+
+    constructor() {
+        if (PackageManager.instance) {
+            return PackageManager.instance;
+        }
+        else {
+            PackageManager.instance = this;
+            return PackageManager.instance
+        }
+    }
+
+    static async getInstance(){
+        return new PackageManager();
+    }
+
+    async initialize(){
+        if ((conf.gitHubProject === null) && (conf.gitHubUser === null)){
+            this.isLocal = true;
+        }
+        else {
+            this.isLocal = false;
+        }
+    }
+
     async doLoadsAndImports(pyodide) {
         await this.loadCircuits(pyodide);
         await this.importPyodidePackages(pyodide);
@@ -56,7 +81,7 @@ class PackageManager {
         setPgrBarTo(0);
 
         let packageAddress = conf.sourcePackageDir;
-        let packages = await this.fetchGitHubDirectoryContents("TheHowland", "InskaLE", "Packages", ".whl");
+        let packages = await this.fetchDirectoryListing(packageAddress, ".whl");
 
         if(Array.isArray(optAddNames)){
             for(let i = 0; i < optAddNames.length; i++){
@@ -83,9 +108,9 @@ class PackageManager {
         console.log("Installed:" + packages);
     }
 
-    async fetchDirectoryListing(url, extension = "") {
+    async #fetchDirectoryListingLocal(path, extension = "") {
         try {
-            const response = await fetch(url);
+            const response = await fetch(path);
             if (!response.ok) {
                 console.log(response)
                 throw new Error('Network response was not ok');
@@ -110,8 +135,9 @@ class PackageManager {
         }
     }
 
-    async fetchGitHubDirectoryContents(owner, repo, path, extension) {
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    async #fetchGitHubDirectoryContents(path, extension) {
+
+        const url = `https://api.github.com/repos/${conf.gitHubUser}${conf.gitHubProject}contents/${path}`;
         try {
             const response = await fetch(url, {
                 headers: {
@@ -126,6 +152,15 @@ class PackageManager {
         } catch (error) {
             console.error('Error fetching GitHub directory contents:', error);
             return [];
+        }
+    }
+
+    async fetchDirectoryListing(path, extension = ""){
+        if (packageManager.isLocal){
+            return this.#fetchDirectoryListingLocal(path, extension)
+        }
+        else {
+            return this.#fetchGitHubDirectoryContents(path, extension)
         }
     }
 }
