@@ -7,7 +7,6 @@ class PageManager {
         this.languageSelect = document.getElementById("Dropdown");
         this.darkModeSwitch = document.getElementById("darkmode-switch");
         this.activeLangFlag = document.getElementById("activeLanguageFlag");
-        this.pages = [this.landingPage, this.selectPage, this.simplifierPage, this.cheatSheet]
     }
 
     showLandingPage() {
@@ -15,10 +14,9 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
-        this.enableSettings();
-        for (let feature of document.querySelectorAll(".feature-container")) {
-            feature.classList.remove("visible");
-        }
+        this.languageSelect.disabled = false;
+        this.darkModeSwitch.disabled = false;
+        this.activeLangFlag.style.filter = "brightness(1)";
     }
 
     showSelectPage() {
@@ -26,7 +24,9 @@ class PageManager {
         this.selectPage.style.display = "block";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
-        this.enableSettings();
+        this.languageSelect.disabled = false;
+        this.darkModeSwitch.disabled = false;
+        this.activeLangFlag.style.filter = "brightness(1)";
     }
 
     showSimplifierPage() {
@@ -34,7 +34,9 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "block";
         this.cheatSheet.style.display = "none";
-        this.disableSettings();
+        this.languageSelect.disabled = true;
+        this.darkModeSwitch.disabled = true;
+        this.activeLangFlag.style.filter = "brightness(0.5)";
     }
 
     showCheatSheet() {
@@ -42,16 +44,6 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "block";
-        this.enableSettings();
-    }
-
-    disableSettings() {
-        this.languageSelect.disabled = true;
-        this.darkModeSwitch.disabled = true;
-        this.activeLangFlag.style.filter = "brightness(0.5)";
-    }
-
-    enableSettings() {
         this.languageSelect.disabled = false;
         this.darkModeSwitch.disabled = false;
         this.activeLangFlag.style.filter = "brightness(1)";
@@ -66,21 +58,8 @@ class PageManager {
         const landingStartButton = document.getElementById("start-button");
         landingStartButton.addEventListener("click", () => {
             this.showSelectPage();
-            landingStartButton.style.animation = ""; // remove pulsing after clicked
         })
         languageManager.updateLanguageLandingPage();
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    for (let feature of document.querySelectorAll(".feature-container")) {
-                        feature.classList.add("visible");
-                    }
-                }
-            });
-        }, { threshold: 1});
-
-        const trigger = document.getElementById("trigger");
-        observer.observe(trigger);
     }
 
     setupSelectPage() {
@@ -138,21 +117,6 @@ class PageManager {
             languageManager.updatesLanguageFields();
         })
 
-        const toggler = document.getElementById("nav-toggler");
-        toggler.addEventListener("click", () => {
-            this.updatePagesOpacity();
-        })
-    }
-
-    updatePagesOpacity() {
-        const toggler = document.getElementById("nav-toggler");
-        for (let page of this.pages) {
-            if (toggler.classList.contains("collapsed")) {
-                page.style.opacity = "1";
-            } else {
-                page.style.opacity = "0.3";
-            }
-        }
     }
 
     setupCheatSheet() {

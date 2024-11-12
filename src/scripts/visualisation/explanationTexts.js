@@ -34,6 +34,7 @@ function generateTextForVoltageCurrent(data) {
     } else {
         text.innerHTML = languageManager.currentLang.relationTextNoRelation;
     }
+    MathJax.typeset();
     return text;
 }
 

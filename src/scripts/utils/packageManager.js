@@ -16,25 +16,18 @@ class PackageManager {
     }
 
     async initialize(){
-        this.isLocal = conf.gitHubUser.includes("localhost");
+        if ((conf.gitHubProject === null) && (conf.gitHubUser === null)){
+            this.isLocal = true;
+        }
+        else {
+            this.isLocal = false;
+        }
     }
 
     async doLoadsAndImports(pyodide) {
         await this.loadCircuits(pyodide);
         await this.importPyodidePackages(pyodide);
         await this.importSolverModule(pyodide);
-        this.loadMathJax();
-    }
-
-    loadMathJax() {
-        console.log('Info: Loading MathJax 3');
-        window.MathJax = {options: {enableMenu: false}};  // Disable MathJax menu on right click
-        (function () {
-            var script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-            script.async = true;
-            document.head.appendChild(script);
-        })();
     }
 
     async loadCircuits(pyodide) {
@@ -81,6 +74,7 @@ class PackageManager {
 
         progressBarContainer.style.display = "none";
         state.pyodideReady = true;
+        //enableStartButtonsOnCircuitSelectors();
     }
 
     async load_packages(pyodide, optAddNames) {

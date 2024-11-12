@@ -75,8 +75,6 @@ const german = {
         "Keine Beziehung zwischen den Elementen",
 
     // Impedance text
-    svgVoltArrowText:
-        "U",
     calcBeforeFirstElement:
         "Die Elemente",
     calcBetweenElements:

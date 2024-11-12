@@ -1,4 +1,4 @@
-# for lcapy version: 1.24+inskale.0.20
+# for lcapy version: 1.24+inskale.0.17
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
@@ -17,7 +17,7 @@ def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/"):
 
 
 class SolveInUserOrder:
-    def __init__(self, filename: str, filePath=None, savePath=None, voltSym: str = "U"):
+    def __init__(self, filename: str, filePath=None, savePath=None):
         """
         :param filename: str with filename of circuit to simplify
         :param filePath: str with path to circuit file if not in current directory
@@ -31,7 +31,6 @@ class SolveInUserOrder:
         self.filename = filename
         self.filePath = filePath
         self.savePath = savePath
-        self.voltSym = voltSym
         self.circuit = Circuit(FileToImpedance(os.path.join(filePath, filename)))
         self.steps: list[SolutionStep] = [
             SolutionStep(self.circuit, None, None, None, None, None,
@@ -64,7 +63,7 @@ class SolveInUserOrder:
         else:
             return False, ("", ""), ""
 
-        sol = Solution(self.steps, voltSym=self.voltSym)
+        sol = Solution(self.steps)
         newestStep = sol.available_steps[-1]
 
         jsonName = sol.exportStepAsJson(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
