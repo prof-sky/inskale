@@ -1,17 +1,4 @@
 const english = {
-    cookies: {
-        customize: "CUSTOMIZE",
-        applySome: "APPLY",
-        rejectAll: "REJECT ALL",
-        acceptAll: "ACCEPT ALL",
-        title: "Cookie Settings",
-        text: "We value your privacy. We use cookies to provide you with the best possible experience on our website.",
-        necessary: "Necessary",
-        analytics: "Analytics",
-        preferences: "Preferences",
-        marketing: "Marketing"
-    },
-
     // Landing page text
     landingPageGreeting:
         "a free browser tool for learning<br>" +
@@ -111,8 +98,6 @@ const english = {
         "The voltage stays the same",
     currentSplits:
         "The current splits up",
-    backBtn:
-        "back to selection",
 
     // Cheat sheet
     resistanceColHeading:

@@ -19,7 +19,6 @@ class PageManager {
         for (let feature of document.querySelectorAll(".feature-container")) {
             feature.classList.remove("visible");
         }
-        document.title = "simpliPFy - Home";
     }
 
     showSelectPage() {
@@ -28,11 +27,6 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
         this.enableSettings();
-        if (state.pyodideReady) {
-            document.title = "Circuit Selection - Ready";
-        } else {
-            document.title = "Circuit Selection - Loading";
-        }
     }
 
     showSimplifierPage() {
@@ -41,7 +35,6 @@ class PageManager {
         this.simplifierPage.style.display = "block";
         this.cheatSheet.style.display = "none";
         this.disableSettings();
-        document.title = "Simplifier";
     }
 
     showCheatSheet() {
@@ -50,7 +43,6 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "block";
         this.enableSettings();
-        document.title = "Cheat Sheet";
     }
 
     disableSettings() {
@@ -71,12 +63,12 @@ class PageManager {
 
     // ########################## Setups ########################################
     setupLandingPage() {
-        languageManager.updateLanguageLandingPage();
-
         const landingStartButton = document.getElementById("start-button");
-        landingStartButton.addEventListener("click", async () => {
-            await this.landingPageStartBtnClicked(this.pyodide)
+        landingStartButton.addEventListener("click", () => {
+            this.showSelectPage();
+            landingStartButton.style.animation = ""; // remove pulsing after clicked
         })
+        languageManager.updateLanguageLandingPage();
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -98,26 +90,6 @@ class PageManager {
             activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
         }
 
-    }
-
-    async landingPageStartBtnClicked(pyodide) {
-        if (state.pyodideLoading || state.pyodideReady) {
-            this.showSelectPage();
-        } else {
-            state.pyodideLoading = true;
-            this.showSelectPage();
-            hideAllSelectors();
-            const note = showWaitingNote();
-
-            // Import packages/scripts, create selector svgs
-            await packageManager.doLoadsAndImports(pyodide);
-            await createSvgsForSelectors(pyodide);
-
-            showAllSelectors();
-            note.innerHTML = "";
-
-            pageManager.setupSelectPage();
-        }
     }
 
     setupSelectPage() {
@@ -145,15 +117,10 @@ class PageManager {
             closeNavbar();
             this.showLandingPage();
         })
-        navSimplifierLink.addEventListener("click", async () => {
+        navSimplifierLink.addEventListener("click", () => {
             checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
             closeNavbar();
-            if (state.pyodideReady) {
-                this.showSelectPage();
-            }
-            else {
-                await this.landingPageStartBtnClicked(this.pyodide);
-            }
+            this.showSelectPage();
         })
         navCheatLink.addEventListener("click", () => {
             checkIfSimplifierPageNeedsReset();

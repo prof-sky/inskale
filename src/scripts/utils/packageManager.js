@@ -16,14 +16,25 @@ class PackageManager {
     }
 
     async initialize(){
-        this.isGitHubPage = conf.isGitHubPage
-        this.fetchDirectoryListing = this.isGitHubPage ? this.#fetchGitHubDirectoryContents : this.#fetchDirectoryListing
+        this.isLocal = conf.gitHubUser.includes("localhost");
     }
 
     async doLoadsAndImports(pyodide) {
         await this.loadCircuits(pyodide);
         await this.importPyodidePackages(pyodide);
         await this.importSolverModule(pyodide);
+        this.loadMathJax();
+    }
+
+    loadMathJax() {
+        console.log('Info: Loading MathJax 3');
+        window.MathJax = {options: {enableMenu: false}};  // Disable MathJax menu on right click
+        (function () {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+            script.async = true;
+            document.head.appendChild(script);
+        })();
     }
 
     async loadCircuits(pyodide) {
@@ -69,9 +80,7 @@ class PackageManager {
         console.log("Imported: " + packages);
 
         progressBarContainer.style.display = "none";
-        document.title = "Circuit Selection - Ready";
         state.pyodideReady = true;
-        state.pyodideLoading = false;
     }
 
     async load_packages(pyodide, optAddNames) {
@@ -105,7 +114,7 @@ class PackageManager {
         console.log("Installed:" + packages);
     }
 
-    async #fetchDirectoryListing(path, extension = "") {
+    async #fetchDirectoryListingLocal(path, extension = "") {
         try {
             const response = await fetch(path);
             if (!response.ok) {
@@ -149,6 +158,15 @@ class PackageManager {
         } catch (error) {
             console.error('Error fetching GitHub directory contents:', error);
             return [];
+        }
+    }
+
+    async fetchDirectoryListing(path, extension = ""){
+        if (packageManager.isLocal){
+            return this.#fetchDirectoryListingLocal(path, extension)
+        }
+        else {
+            return this.#fetchGitHubDirectoryContents(path, extension)
         }
     }
 }
