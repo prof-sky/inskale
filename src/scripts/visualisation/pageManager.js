@@ -20,6 +20,8 @@ class PageManager {
             feature.classList.remove("visible");
         }
         document.title = "simpliPFy - Home";
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     showSelectPage() {
@@ -28,7 +30,13 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
         this.enableSettings();
-        document.title = "Circuit Selection";
+        if (state.pyodideReady) {
+            document.title = "Circuit Selection - Ready";
+        } else {
+            document.title = "Circuit Selection - Loading";
+        }
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     showSimplifierPage() {
@@ -38,6 +46,8 @@ class PageManager {
         this.cheatSheet.style.display = "none";
         this.disableSettings();
         document.title = "Simplifier";
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     showCheatSheet() {
@@ -47,6 +57,8 @@ class PageManager {
         this.cheatSheet.style.display = "block";
         this.enableSettings();
         document.title = "Cheat Sheet";
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     disableSettings() {
@@ -85,15 +97,6 @@ class PageManager {
 
         const trigger = document.getElementById("trigger");
         observer.observe(trigger);
-
-        const activeFlagIcon = document.getElementById("activeLanguageFlag");
-        if (languageManager.currentLang === german) {
-            activeFlagIcon.setAttribute("src", "src/resources/navigation/germany.png");
-        }
-        else if (languageManager.currentLang === english) {
-            activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
-        }
-
     }
 
     async landingPageStartBtnClicked(pyodide) {
@@ -180,6 +183,14 @@ class PageManager {
         toggler.addEventListener("click", () => {
             this.updatePagesOpacity();
         })
+
+        const activeFlagIcon = document.getElementById("activeLanguageFlag");
+        if (languageManager.currentLang === german) {
+            activeFlagIcon.setAttribute("src", "src/resources/navigation/germany.png");
+        }
+        else if (languageManager.currentLang === english) {
+            activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
+        }
     }
 
     updatePagesOpacity() {
